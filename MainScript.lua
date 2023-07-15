@@ -29,7 +29,7 @@ end
 matList = {Enum.Material.Ice,Enum.Material.Brick,Enum.Material.Wood,Enum.Material.WoodPlanks,Enum.Material.ForceField,Enum.Material.Slate,Enum.Material.Pebble,Enum.Material.Foil}
 matListCoor = {2,0,4,4,3,1,1,9}
 
-headscale = headscale * .3
+headscale = 0.3
 
 children = workspace.GrabMap:GetDescendants()
 childrenTemp = {}
