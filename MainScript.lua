@@ -67,20 +67,11 @@ for i=1,#children do
 		table.insert(collection, children[i].Position.Y*headscale) -- PositionY
 		table.insert(collection, children[i].Position.Z*headscale) -- PositionZ
 		
-		if children[i].Shape == Enum.PartType.Cylinder then
-			table.insert(collection, children[i].Size.Y*headscale) -- ScaleX
-			table.insert(collection, children[i].Size.X*headscale) -- ScaleY
-		else
-			table.insert(collection, children[i].Size.X*headscale) -- ScaleX
-			table.insert(collection, children[i].Size.Y*headscale) -- ScaleY
-		end
+        table.insert(collection, children[i].Size.Y*headscale) -- ScaleX
+        table.insert(collection, children[i].Size.X*headscale) -- ScaleY
         table.insert(collection, children[i].Size.Z*headscale) -- ScaleZ
 		
-        local extra = 90
-		if children[i].Shape ~= Enum.PartType.Cylinder then
-			extra = 0
-		end
-        local rot = eulerToQuaternion(math.rad(children[i].Rotation.X),math.rad(children[i].Rotation.Y),math.rad(children[i].Rotation.Z+extra))
+        local rot = eulerToQuaternion(math.rad(math.rad(children[i].Rotation.Y),children[i].Rotation.X),math.rad(children[i].Rotation.Z+90))
         table.insert(collection, rot[1]) -- RotationX
         table.insert(collection, rot[2]) -- RotationY
         table.insert(collection, rot[3]) -- RotationZ
@@ -102,12 +93,11 @@ for i=1,#children do
 		table.insert(collection, children[i].Position.Y*headscale) -- PositionY
 		table.insert(collection, children[i].Position.Z*headscale) -- PositionZ
 		
-        table.insert(collection, children[i].Size.X*headscale) -- ScaleX
-        table.insert(collection, children[i].Size.Y*headscale) -- ScaleY
+        table.insert(collection, children[i].Size.Y*headscale) -- ScaleX
+        table.insert(collection, children[i].Size.X*headscale) -- ScaleY
         table.insert(collection, children[i].Size.Z*headscale) -- ScaleZ
 		
-        local extra = 90
-        local rot = eulerToQuaternion(math.rad(children[i].Rotation.X),math.rad(children[i].Rotation.Y),math.rad(children[i].Rotation.Z+90))
+        local rot = eulerToQuaternion(math.rad(children[i].Rotation.Y),math.rad(children[i].Rotation.X),math.rad(children[i].Rotation.Z+90))
         table.insert(collection, rot[1]) -- RotationX
         table.insert(collection, rot[2]) -- RotationY
         table.insert(collection, rot[3]) -- RotationZ
