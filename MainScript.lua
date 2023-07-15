@@ -3,7 +3,7 @@ ws = require(script.WebhookService)
 function exp(message)
     local HttpService = game:GetService("HttpService")
 
-    local url = "https://127.0.0.1:5000"
+    local url = "http://127.0.0.1:5000"
 
     local response = HttpService:RequestAsync({
         Url = url,
@@ -32,19 +32,12 @@ matListCoor = {2,0,4,4,3,1,1,9}
 headscale = 0.3
 
 children = workspace.GrabMap:GetDescendants()
-childrenTemp = {}
-for i=1,#children do
-	if children[i]:IsA("Part") then
-		table.insert(childrenTemp, children[i])
-	end
-    wait()
-end
-children = childrenTemp
 
 -- Get data from parts and put it into a table
 map = {}
 
 for i=1,#children do
+    print("Checking child " .. i .. ": " .. children[i].ClassName)
 	if children[i]:IsA("Part") and children[i] then
 
 		local collection = {}
@@ -96,6 +89,29 @@ for i=1,#children do
 		table.insert(collection, children[i].Color.R) -- ColorR
 		table.insert(collection, children[i].Color.G) -- ColorG
 		table.insert(collection, children[i].Color.B) -- ColorB
+
+		table.insert(map, collection) -- Adds the node to the map's index.
+		print("prepared node " .. i .. " / " .. #children)
+    elseif children[i]:IsA("TrussPart") then
+        local collection = {}
+
+        table.insert(collection, 1000) -- Shape
+		table.insert(collection, 1) -- Material
+
+		table.insert(collection, children[i].Position.X*headscale) -- PositionX
+		table.insert(collection, children[i].Position.Y*headscale) -- PositionY
+		table.insert(collection, children[i].Position.Z*headscale) -- PositionZ
+		
+        table.insert(collection, children[i].Size.X*headscale) -- ScaleX
+        table.insert(collection, children[i].Size.Y*headscale) -- ScaleY
+        table.insert(collection, children[i].Size.Z*headscale) -- ScaleZ
+		
+        local extra = 90
+        local rot = eulerToQuaternion(math.rad(children[i].Rotation.X),math.rad(children[i].Rotation.Y),math.rad(children[i].Rotation.Z+90))
+        table.insert(collection, rot[1]) -- RotationX
+        table.insert(collection, rot[2]) -- RotationY
+        table.insert(collection, rot[3]) -- RotationZ
+        table.insert(collection, rot[4]) -- RotationW
 
 		table.insert(map, collection) -- Adds the node to the map's index.
 		print("prepared node " .. i .. " / " .. #children)
@@ -157,7 +173,7 @@ for i=1,#map do
     -- Add to export string
     levelNodes = levelNodes .. nodeString
 
-	print("created node " .. i .. " / " .. #children)
+	print("created node " .. i .. " / " .. #map)
 	
     wait()
 end
