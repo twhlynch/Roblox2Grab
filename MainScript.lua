@@ -19,6 +19,15 @@ function exp(message)
 end
 
 function eulerToQuaternion(roll,pitch,yaw) -- Converts euler rotations to a quaternion.
+    if roll == nil then
+		roll = 0
+	end
+	if pitch == nil then
+		pitch = 0
+	end
+	if yaw == nil then
+		yaw = 0
+	end
 	local qx = math.sin(roll/2) * math.cos(pitch/2) * math.cos(yaw/2) - math.cos(roll/2) * math.sin(pitch/2) * math.sin(yaw/2)
 	local qy = math.cos(roll/2) * math.sin(pitch/2) * math.cos(yaw/2) + math.sin(roll/2) * math.cos(pitch/2) * math.sin(yaw/2)
 	local qz = math.cos(roll/2) * math.cos(pitch/2) * math.sin(yaw/2) - math.sin(roll/2) * math.sin(pitch/2) * math.cos(yaw/2)
