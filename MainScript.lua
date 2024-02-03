@@ -80,7 +80,7 @@ for i=1,#children do
         table.insert(collection, children[i].Size.X*headscale) -- ScaleY
         table.insert(collection, children[i].Size.Z*headscale) -- ScaleZ
 		
-        local rot = eulerToQuaternion(math.rad(math.rad(children[i].Rotation.Y),children[i].Rotation.X),math.rad(children[i].Rotation.Z+90))
+        local rot = eulerToQuaternion(math.rad(children[i].Rotation.Y),math.rad(children[i].Rotation.X),math.rad(children[i].Rotation.Z+90))
         table.insert(collection, rot[1]) -- RotationX
         table.insert(collection, rot[2]) -- RotationY
         table.insert(collection, rot[3]) -- RotationZ
