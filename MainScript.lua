@@ -68,7 +68,6 @@ for i=1,#children do
 			if children[i].Material == matList[e] then
 				curmat = matListCoor[e]
 			end
-            wait()
 		end
 		table.insert(collection, curmat) -- Material
 
