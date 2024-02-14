@@ -22,6 +22,8 @@
 - When finished a .json file will be created in the folder with `server.py`
 - To convert it to a .level file see [Slin/GRAB-Level-Format](https://github.com/Slin/GRAB-Level-Format) (`tools/ConvertToLevel.py`) or [grab-tools.live](https://grab-tools.live/editor).
 
+> [Rbx2Grab plugin by GeoFennec](https://create.roblox.com/store/asset/16359944935/Rbx2Grab)
+
 ## Credit
 - @person615 (Discord) Created the first version / proof of concept.
 - @the1geo (Discord) Helped fix the rotation issue.
