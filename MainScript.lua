@@ -134,7 +134,7 @@ for i=1,#map do
     colorString = [[]]
     if curNode[2] == 8 then
         colorString = [[,
-        "color": {
+        "color1": {
             "r":]] .. curNode[13] .. [[,
             "g":]] .. curNode[14] .. [[,
             "b":]] .. curNode[15] .. [[,
