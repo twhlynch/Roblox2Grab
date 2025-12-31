@@ -30,6 +30,6 @@
 ## Credit
 - @person615 (Discord) Created the first version / proof of concept.
 - @.index (Discord / [GitHub](https://github.com/twhlynch)
-- @vestriaa (Discord) [GitHub](https://github.com/vestriaa)
+- @vestriaa (Discord) / [GitHub](https://github.com/vestriaa)
 - @the1geo (Discord) Helped fix the rotation issue.
 - @slindev (Discord) / [GitHub](https://github.com/Slin) Created Grab and the level format.
