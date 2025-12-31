@@ -1,209 +1,181 @@
 ws = require(script.WebhookService)
 
-function exp(message)
-    local HttpService = game:GetService("HttpService")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
-    local url = "http://127.0.0.1:5000"
+local function exp(player, message)
+	local url = "https://roblox.vestria.workers.dev/"
 
-    local response = HttpService:RequestAsync({
-        Url = url,
-        Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = HttpService:JSONEncode({ message = message })
-    })
+	local response = HttpService:RequestAsync({
+		Url = url,
+		Method = "POST",
+		Headers = {
+			["Content-Type"] = "application/json"
+		},
+		Body = HttpService:JSONEncode({
+			message = message,
+			username = player.Name
+		})
+	})
 
-    print(response.Body)
-    print("Sent data!")
+	print(response.StatusCode, response.Body)
 end
 
-function eulerToQuaternion(roll,pitch,yaw) -- Converts euler rotations to a quaternion.
-    if roll == nil then
-		roll = 0
+local function cframeToQuaternion(cf)
+	local _, _, _,
+	r00, r01, r02,
+	r10, r11, r12,
+	r20, r21, r22 = cf:GetComponents()
+
+	local trace = r00 + r11 + r22
+	local qw, qx, qy, qz
+
+	if trace > 0 then
+		local s = math.sqrt(trace + 1.0) * 2
+		qw = 0.25 * s
+		qx = (r21 - r12) / s
+		qy = (r02 - r20) / s
+		qz = (r10 - r01) / s
+	elseif r00 > r11 and r00 > r22 then
+		local s = math.sqrt(1.0 + r00 - r11 - r22) * 2
+		qw = (r21 - r12) / s
+		qx = 0.25 * s
+		qy = (r01 + r10) / s
+		qz = (r02 + r20) / s
+	elseif r11 > r22 then
+		local s = math.sqrt(1.0 + r11 - r00 - r22) * 2
+		qw = (r02 - r20) / s
+		qx = (r01 + r10) / s
+		qy = 0.25 * s
+		qz = (r12 + r21) / s
+	else
+		local s = math.sqrt(1.0 + r22 - r00 - r11) * 2
+		qw = (r10 - r01) / s
+		qx = (r02 + r20) / s
+		qy = (r12 + r21) / s
+		qz = 0.25 * s
 	end
-	if pitch == nil then
-		pitch = 0
-	end
-	if yaw == nil then
-		yaw = 0
-	end
-	local qx = math.sin(roll/2) * math.cos(pitch/2) * math.cos(yaw/2) - math.cos(roll/2) * math.sin(pitch/2) * math.sin(yaw/2)
-	local qy = math.cos(roll/2) * math.sin(pitch/2) * math.cos(yaw/2) + math.sin(roll/2) * math.cos(pitch/2) * math.sin(yaw/2)
-	local qz = math.cos(roll/2) * math.cos(pitch/2) * math.sin(yaw/2) - math.sin(roll/2) * math.sin(pitch/2) * math.cos(yaw/2)
-	local qw = math.cos(roll/2) * math.cos(pitch/2) * math.cos(yaw/2) + math.sin(roll/2) * math.sin(pitch/2) * math.sin(yaw/2)
-	return {qx, qy, qz, qw}
+
+	return qx, qy, qz, qw
 end
--- Setup
-matList = {Enum.Material.Ice,Enum.Material.Brick,Enum.Material.Wood,Enum.Material.WoodPlanks,Enum.Material.ForceField,Enum.Material.Slate,Enum.Material.Pebble,Enum.Material.Foil}
-matListCoor = {2,0,4,4,3,1,1,9}
 
-headscale = 0.3
+local matList = {
+	Enum.Material.Ice,
+	Enum.Material.Brick,
+	Enum.Material.Wood,
+	Enum.Material.WoodPlanks,
+	Enum.Material.ForceField,
+	Enum.Material.Slate,
+	Enum.Material.Pebble,
+	Enum.Material.Foil
+}
 
-children = workspace.GrabMap:GetDescendants()
+local matListCoor = { 2, 0, 4, 4, 3, 1, 1, 9 }
+local headscale = 0.3
 
--- Get data from parts and put it into a table
-map = {}
+local folder = workspace:FindFirstChild("GrabMap")
+if not folder then
+	error("GrabMap folder not found in workspace!")
+end
 
-for i=1,#children do
-    print("Checking child " .. i .. ": " .. children[i].ClassName)
-	if children[i]:IsA("Part") and children[i] then
+local children = folder:GetDescendants()
+if #children == 0 then
+	warn("GrabMap has no descendants!")
+else
+	print("Found", #children, "descendants in GrabMap")
+end
 
-		local collection = {}
+local nodeList = {}
 
-        local shape = 1000
-		if children[i].Shape == Enum.PartType.Block then
-			shape = 1000
-		end
-		if children[i].Shape == Enum.PartType.Ball then
-			shape = 1001
-		end
-		if children[i].Shape == Enum.PartType.Cylinder then
-            shape = 1002
-		end
-        table.insert(collection, shape) -- Shape
+for i = 1, #children do
+	local child = children[i]
 
-		local curmat = 8
-		for e=1,#matList do
-			if children[i].Material == matList[e] then
-				curmat = matListCoor[e]
+	if child:IsA("Part") or child:IsA("TrussPart") then
+
+		local shape = 1000
+		if child:IsA("Part") then
+			if child.Shape == Enum.PartType.Ball then
+				shape = 1001
+			elseif child.Shape == Enum.PartType.Cylinder then
+				shape = 1002
 			end
 		end
-		table.insert(collection, curmat) -- Material
 
-		table.insert(collection, children[i].Position.X*headscale) -- PositionX
-		table.insert(collection, children[i].Position.Y*headscale) -- PositionY
-		table.insert(collection, children[i].Position.Z*headscale) -- PositionZ
-		
-        table.insert(collection, children[i].Size.Y*headscale) -- ScaleX
-        table.insert(collection, children[i].Size.X*headscale) -- ScaleY
-        table.insert(collection, children[i].Size.Z*headscale) -- ScaleZ
-		
-        local rot = eulerToQuaternion(math.rad(children[i].Rotation.Y),math.rad(children[i].Rotation.X),math.rad(children[i].Rotation.Z+90))
-        table.insert(collection, rot[1]) -- RotationX
-        table.insert(collection, rot[2]) -- RotationY
-        table.insert(collection, rot[3]) -- RotationZ
-        table.insert(collection, rot[4]) -- RotationW
+		local material = 8
+		if child:IsA("Part") then
+			for m = 1, #matList do
+				if child.Material == matList[m] then
+					material = matListCoor[m]
+					break
+				end
+			end
+		end
 
-		table.insert(collection, children[i].Color.R) -- ColorR
-		table.insert(collection, children[i].Color.G) -- ColorG
-		table.insert(collection, children[i].Color.B) -- ColorB
+		local px = child.Position.X * headscale
+		local py = child.Position.Y * headscale
+		local pz = child.Position.Z * headscale
 
-		table.insert(map, collection) -- Adds the node to the map's index.
-		print("prepared node " .. i .. " / " .. #children)
-    elseif children[i]:IsA("TrussPart") then
-        local collection = {}
+		local sx = child.Size.X * headscale
+		local sy = child.Size.Y * headscale
+		local sz = child.Size.Z * headscale
 
-        table.insert(collection, 1000) -- Shape
-		table.insert(collection, 1) -- Material
+		local qx, qy, qz, qw = cframeToQuaternion(child.CFrame)
 
-		table.insert(collection, children[i].Position.X*headscale) -- PositionX
-		table.insert(collection, children[i].Position.Y*headscale) -- PositionY
-		table.insert(collection, children[i].Position.Z*headscale) -- PositionZ
-		
-        table.insert(collection, children[i].Size.Y*headscale) -- ScaleX
-        table.insert(collection, children[i].Size.X*headscale) -- ScaleY
-        table.insert(collection, children[i].Size.Z*headscale) -- ScaleZ
-		
-        local rot = eulerToQuaternion(math.rad(children[i].Rotation.Y),math.rad(children[i].Rotation.X),math.rad(children[i].Rotation.Z+90))
-        table.insert(collection, rot[1]) -- RotationX
-        table.insert(collection, rot[2]) -- RotationY
-        table.insert(collection, rot[3]) -- RotationZ
-        table.insert(collection, rot[4]) -- RotationW
+		local isTransparent = false
+		local alpha = 1
+		if child:IsA("Part") and child.Transparency > 0 then
+			isTransparent = true
+			alpha = 1 - child.Transparency
+		end
 
-		table.insert(map, collection) -- Adds the node to the map's index.
-		print("prepared node " .. i .. " / " .. #children)
+		local node = {
+			levelNodeStatic = {
+				shape = shape,
+				material = material,
+				position = { x = px, y = py, z = pz },
+				scale = { x = sx, y = sy, z = sz },
+				rotation = { w = qw, x = qx, y = qy, z = qz }
+			}
+		}
+
+		if child:IsA("Part") then
+			if material == 8 or isTransparent then
+				node.levelNodeStatic.color1 = {
+					r = child.Color.R,
+					g = child.Color.G,
+					b = child.Color.B,
+					a = alpha
+				}
+			end
+
+			if isTransparent then
+				node.levelNodeStatic.isTransparent = true
+			end
+		end
+
+		table.insert(nodeList, node)
 	end
-	wait()
 end
 
--- Create the JSON string for the map
-levelNodes = [[]]
-
-for i=1,#map do
-
-	curNode = map[i]
-
-    -- Comma or not
-    commaString = [[,]]
-    if #map == i then
-        commaString = [[]]
-    end
-
-    -- Color or not
-    colorString = [[]]
-    if curNode[2] == 8 then
-        colorString = [[,
-        "color1": {
-            "r":]] .. curNode[13] .. [[,
-            "g":]] .. curNode[14] .. [[,
-            "b":]] .. curNode[15] .. [[,
-            "a":1
-        }
-        ]]
-    end
-
-    -- Node string
-    nodeString = [[
-        { 
-            "levelNodeStatic": {
-                "shape":]] .. curNode[1] .. [[,
-                "material":]] .. curNode[2] .. [[,
-                "position": {
-                    "x":]] .. curNode[3] .. [[,
-                    "y":]] .. curNode[4] .. [[,
-                    "z":]] .. curNode[5] .. [[
-                },
-                "scale": {
-                    "x":]] .. curNode[6] .. [[,
-                    "y":]] .. curNode[7] .. [[,
-                    "z":]] .. curNode[8] .. [[
-                },
-                "rotation": {
-                    "w":]] .. curNode[12] .. [[,
-                    "x":]] .. curNode[9] .. [[,
-                    "y":]] .. curNode[10] .. [[,
-                    "z":]] .. curNode[11] .. [[ 
-                }]] .. colorString .. [[
-            }
-        }]] .. commaString
-    
-    -- Add to export string
-    levelNodes = levelNodes .. nodeString
-
-	print("created node " .. i .. " / " .. #map)
-	
-    wait()
-end
-
-map = [[{
-    "formatVersion": 6,
-    "title": "Roblox Map",
-    "creators": "",
-    "description": "This map was created using Person and .index's Roblox2Grab script!",
-    "levelNodes": [
-        ]] .. levelNodes .. [[
-    ],
-    "maxCheckpointCount": 10,
-    "ambienceSettings": {
-        "skyZenithColor": {
-            "r": 0.2800000011920929,
-            "g": 0.47600001096725464,
-            "b": 0.7300000190734863,
-            "a": 1
-        },
-        "skyHorizonColor": {
-            "r": 0.9160000085830688,
-            "g": 0.9574000239372253,
-            "b": 0.9574000239372253,
-            "a": 1
-        },
-        "sunAltitude": 45,
-        "sunAzimuth": 315,
-        "sunSize": 1,
-        "fogDDensity": 0
-    }
+local mapTable = {
+	formatVersion = 18,
+	title = "Roblox Map",
+	creators = "",
+	description = "This map was created using Person and .index's Roblox2Grab script!",
+	levelNodes = nodeList,
+	maxCheckpointCount = 10,
+	ambienceSettings = {
+		skyZenithColor = { r = 0.2800000011920929, g = 0.47600001096725464, b = 0.7300000190734863, a = 1 },
+		skyHorizonColor = { r = 0.9160000085830688, g = 0.9574000239372253, b = 0.9574000239372253, a = 1 },
+		sunAltitude = 45,
+		sunAzimuth = 315,
+		sunSize = 1,
+		fogDensity = 0
+	}
 }
-]]
 
-exp(map)
+local finalJSON = HttpService:JSONEncode(mapTable)
+
+local player = Players.PlayerAdded:Wait()
+
+exp(player, finalJSON)
