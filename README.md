@@ -24,3 +24,12 @@
 - The server script waits for the first player to know their Roblox username.  
 - The script exports the map from the `GrabMap` folder as JSON.  
 - The JSON file is sent into a public channel of the Discord server.  
+
+---
+
+## Credit
+- @person615 (Discord) Created the first version / proof of concept.
+- @.index (Discord / [GitHub](https://github.com/twhlynch)
+- @vestriaa (Discord) [GitHub](https://github.com/vestriaa)
+- @the1geo (Discord) Helped fix the rotation issue.
+- @slindev (Discord) / [GitHub](https://github.com/Slin) Created Grab and the level format.
