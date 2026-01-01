@@ -4,7 +4,7 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
 local function exp(player, message)
-	local url = "https://roblox.vestria.workers.dev/"
+	local url = "https://robloxtest.vestria.workers.dev/"
 
 	local response = HttpService:RequestAsync({
 		Url = url,
@@ -174,8 +174,6 @@ local mapTable = {
 	}
 }
 
-local finalJSON = HttpService:JSONEncode(mapTable)
-
 local player = Players.PlayerAdded:Wait()
 
-exp(player, finalJSON)
+exp(player, mapTable)
