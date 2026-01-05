@@ -186,3 +186,5 @@ local function roblox_to_grab()
 end
 
 roblox_to_grab()
+
+print("Finished!")

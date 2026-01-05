@@ -1,5 +1,11 @@
 # macos
 .DS_Store
 
+# python
+/.venv
+
 # output
-*.level
+/*.json
+/*.level
+
+!/.luarc.json

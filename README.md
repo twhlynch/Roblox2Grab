@@ -20,12 +20,11 @@
 ### Setup Server
 
 1. Open a terminal / command prompt and navigate to this folder.
-2. On Windows run `setup.bat`. On Mac / Linux run `./setup.sh`.
-3. Run `python server.py` to start the server on `https://127.0.0.1:5000`.
+2. On Windows run `run.bat`. On Mac / Linux run `./run.sh`. This will setup and start the server on `https://127.0.0.1:5000`.
 
 ### Usage
 
-1. Run the game and press `F9` to start the script.
+1. Run the game to start the script. Press `F9` for logs.
 2. When finished a .json file will have been created in this folder.
 3. You can convert the JSON file to a level file with any json to level tool such the [JSON editor](https://grabvr.tools/editor).
 
